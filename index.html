@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador de Planos - Contas vs Tesouraria</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .config-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .config-section h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .config-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .config-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .config-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .config-group input, .config-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-section {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .upload-box {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .upload-box h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .file-input {
+            margin-bottom: 15px;
+        }
+        
+        .file-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .file-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .file-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        
+        .file-preview th, .file-preview td {
+            padding: 6px;
+            border: 1px solid #ddd;
+        }
+        
+        .file-preview th {
+            background-color: #f2f2f2;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .validated {
+            background-color: rgba(39, 174, 96, 0.1);
+        }
+        
+        .partially-validated {
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+        
+        .not-validated {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .empty-cbl {
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+        
+        .duplicate-name {
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button.success {
+            background-color: var(--success-color);
+        }
+        
+        button.success:hover {
+            background-color: #219955;
+        }
+        
+        button.warning {
+            background-color: var(--warning-color);
+        }
+        
+        button.warning:hover {
+            background-color: #e67e22;
+        }
+        
+        button.danger {
+            background-color: var(--danger-color);
+        }
+        
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-valid {
+            background-color: var(--success-color);
+        }
+        
+        .status-partial {
+            background-color: var(--warning-color);
+        }
+        
+        .status-invalid {
+            background-color: var(--danger-color);
+        }
+        
+        .status-empty {
+            background-color: var(--warning-color);
+        }
+        
+        .report-section {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            min-width: 200px;
+            background: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .validation-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .validation-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--secondary-color);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            color: var(--danger-color);
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .validation-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .validation-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+            background-color: #f5f5f5;
+        }
+        
+        .validation-tab.active {
+            background-color: white;
+            border-color: #ddd;
+            border-bottom-color: white;
+            margin-bottom: -1px;
+            font-weight: bold;
+        }
+        
+        .validation-tab:hover:not(.active) {
+            background-color: #e9e9e9;
+        }
+        
+        .validation-tab-content {
+            display: none;
+        }
+        
+        .validation-tab-content.active {
+            display: block;
+        }
+        
+        .duplicate-warning {
+            color: var(--danger-color);
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .upload-section {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .upload-box h2 {
+                font-size: 1.1rem;
+            }
+            
+            .validation-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .validation-tab {
+                flex: 1;
+                text-align: center;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Comparador de Planos - Contas vs Tesouraria</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div class="config-section">
+            <h2>Configurações de Comparação</h2>
+            <div class="config-options">
+                <div class="config-group">
+                    <label for="prefixField">Prefixo para Código CBL</label>
+                    <input type="text" id="prefixField" value="4111" placeholder="Ex: 4111">
+                </div>
+                <div class="config-group">
+                    <label for="descricaoMatch">Comparação de Descrição</label>
+                    <select id="descricaoMatch">
+                        <option value="none">Não comparar descrições</option>
+                        <option value="partial">Comparação parcial (recomendado)</option>
+                        <option value="exact">Comparação exata</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="caseSensitive">Sensível a maiúsculas/minúsculas</label>
+                    <select id="caseSensitive">
+                        <option value="false">Não</option>
+                        <option value="true">Sim</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="upload-section">
+            <div class="upload-box">
+                <h2>Plano de Tesouraria</h2>
+                <div class="file-input">
+                    <label for="tesourariaFile">Selecione o arquivo (CSV ou Excel)</label>
+                    <input type="file" id="tesourariaFile" accept=".csv, .xlsx, .xls">
+                </div>
+                <div class="file-preview" id="tesourariaPreview">
+                    <p>Nenhum arquivo carregado</p>
+                </div>
+            </div>
+            
+            <div class="upload-box">
+                <h2>Plano de Contas</h2>
+                <div class="file-input">
+                    <label for="contasFile">Selecione o arquivo (CSV ou Excel)</label>
+                    <input type="file" id="contasFile" accept=".csv, .xlsx, .xls">
+                </div>
+                <div class="file-preview" id="contasPreview">
+                    <p>Nenhum arquivo carregado</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button id="compareBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M6 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5zm4 0a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V4a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                Comparar Planos
+            </button>
+            <button id="exportBtn" class="success" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                </svg>
+                Exportar Resultados
+            </button>
+            <button id="generateReportBtn" class="warning" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                    <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                </svg>
+                Gerar Relatório
+            </button>
+            <button id="exportPdfBtn" class="success" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.523 10.424q.33-.527.657-1.055.265-.436.487-.908.226-.482.4-.976.18-.506.3-1.04.125-.534.187-1.095h1.147q-.06.614-.163 1.21-.102.592-.275 1.155a7.2 7.2 0 0 1-.564 1.31 8.1 8.1 0 0 1-.753 1.178l-.1.13H9.31l.1-.132q.345-.455.723-.91.38-.453.782-.88.408-.423.857-.82.453-.4.942-.762.492-.366 1.03-.684.54-.32 1.125-.588.588-.272 1.22-.476.636-.21 1.31-.35.68-.144 1.4-.2V4.5H5.773v5.923zm-2.73 2.73V4.5H1.61v8.653h1.183zm4.815 0V4.5h-1.21v8.653h1.21zm2.605 0V4.5h-1.21v8.653h1.21z"/>
+                </svg>
+                Exportar para PDF
+            </button>
+            <button id="clearBtn" class="danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                </svg>
+                Limpar Tudo
+            </button>
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="loading-spinner"></div>
+            <p>Processando dados...</p>
+        </div>
+        
+        <div id="resultsSection" style="display: none;">
+            <h2>Resultados da Comparação</h2>
+            <div class="stats" id="statsContainer">
+                <!-- Stats will be inserted here by JavaScript -->
+            </div>
+            
+            <div class="validation-tabs">
+                <div class="validation-tab active" data-tab="all">Todos</div>
+                <div class="validation-tab" data-tab="valid">Validados</div>
+                <div class="validation-tab" data-tab="partial">Parciais</div>
+                <div class="validation-tab" data-tab="invalid">Inválidos</div>
+                <div class="validation-tab" data-tab="empty">CBL Vazio</div>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Código Tesouraria</th>
+                            <th>Descrição Tesouraria</th>
+                            <th>Código CBL</th>
+                            <th>Código Plano de Contas</th>
+                            <th>Descrição Plano de Contas</th>
+                            <th>Validação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <!-- Results will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="report-section" id="reportSection" style="display: none;">
+            <h2>Relatório de Validação</h2>
+            <div class="action-buttons">
+                <button id="exportValidBtn" class="success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                    </svg>
+                    Exportar Válidos
+                </button>
+                <button id="exportInvalidBtn" class="danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                    </svg>
+                    Exportar Inválidos
+                </button>
+                <button id="exportPartialBtn" class="warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                    </svg>
+                    Exportar Parciais
+                </button>
+                <button id="exportEmptyBtn" class="warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                    </svg>
+                    Exportar CBL Vazio
+                </button>
+                <button id="exportReportPdfBtn" class="success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M5.523 10.424q.33-.527.657-1.055.265-.436.487-.908.226-.482.4-.976.18-.506.3-1.04.125-.534.187-1.095h1.147q-.06.614-.163 1.21-.102.592-.275 1.155a7.2 7.2 0 0 1-.564 1.31 8.1 8.1 0 0 1-.753 1.178l-.1.13H9.31l.1-.132q.345-.455.723-.91.38-.453.782-.88.408-.423.857-.82.453-.4.942-.762.492-.366 1.03-.684.54-.32 1.125-.588.588-.272 1.22-.476.636-.21 1.31-.35.68-.144 1.4-.2V4.5H5.773v5.923zm-2.73 2.73V4.5H1.61v8.653h1.183zm4.815 0V4.5h-1.21v8.653h1.21zm2.605 0V4.5h-1.21v8.653h1.21z"/>
+                    </svg>
+                    Gerar PDF do Relatório
+                </button>
+            </div>
+            
+            <div id="validReport" style="margin-bottom: 30px;">
+                <h3>Itens Validados</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código Tesouraria</th>
+                            <th>Descrição Tesouraria</th>
+                            <th>Código CBL</th>
+                            <th>Código Plano de Contas</th>
+                            <th>Descrição Plano de Contas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="validReportBody">
+                        <!-- Valid items will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="partialReport" style="margin-bottom: 30px;">
+                <h3>Itens Parcialmente Validados</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código Tesouraria</th>
+                            <th>Descrição Tesouraria</th>
+                            <th>Código CBL</th>
+                            <th>Código Plano de Contas</th>
+                            <th>Descrição Plano de Contas</th>
+                            <th>Razão</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partialReportBody">
+                        <!-- Partial items will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="emptyReport" style="margin-bottom: 30px;">
+                <h3>Itens com CBL Vazio</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código Tesouraria</th>
+                            <th>Descrição Tesouraria</th>
+                            <th>Código CBL</th>
+                            <th>Razão</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emptyReportBody">
+                        <!-- Empty CBL items will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="invalidReport">
+                <h3>Itens Não Validados</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código Tesouraria</th>
+                            <th>Descrição Tesouraria</th>
+                            <th>Código CBL</th>
+                            <th>Razão</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invalidReportBody">
+                        <!-- Invalid items will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+        // Global variables to store the data
+        let tesourariaData = [];
+        let contasData = [];
+        let comparisonResults = [];
+        let duplicateNames = new Set();
+        
+        // DOM elements
+        const tesourariaFileInput = document.getElementById('tesourariaFile');
+        const contasFileInput = document.getElementById('contasFile');
+        const tesourariaPreview = document.getElementById('tesourariaPreview');
+        const contasPreview = document.getElementById('contasPreview');
+        const compareBtn = document.getElementById('compareBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const generateReportBtn = document.getElementById('generateReportBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const exportReportPdfBtn = document.getElementById('exportReportPdfBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsBody = document.getElementById('resultsBody');
+        const reportSection = document.getElementById('reportSection');
+        const validReportBody = document.getElementById('validReportBody');
+        const partialReportBody = document.getElementById('partialReportBody');
+        const emptyReportBody = document.getElementById('emptyReportBody');
+        const invalidReportBody = document.getElementById('invalidReportBody');
+        const statsContainer = document.getElementById('statsContainer');
+        const exportValidBtn = document.getElementById('exportValidBtn');
+        const exportInvalidBtn = document.getElementById('exportInvalidBtn');
+        const exportPartialBtn = document.getElementById('exportPartialBtn');
+        const exportEmptyBtn = document.getElementById('exportEmptyBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const prefixField = document.getElementById('prefixField');
+        const descricaoMatch = document.getElementById('descricaoMatch');
+        const caseSensitive = document.getElementById('caseSensitive');
+        const validationTabs = document.querySelectorAll('.validation-tab');
+        
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+        
+        // Event listeners
+        tesourariaFileInput.addEventListener('change', handleFileUpload);
+        contasFileInput.addEventListener('change', handleFileUpload);
+        compareBtn.addEventListener('click', compareData);
+        exportBtn.addEventListener('click', exportResults);
+        generateReportBtn.addEventListener('click', generateReport);
+        exportPdfBtn.addEventListener('click', exportToPdf);
+        exportReportPdfBtn.addEventListener('click', exportReportToPdf);
+        clearBtn.addEventListener('click', clearAll);
+        exportValidBtn.addEventListener('click', () => exportReportData('valid'));
+        exportInvalidBtn.addEventListener('click', () => exportReportData('invalid'));
+        exportPartialBtn.addEventListener('click', () => exportReportData('partial'));
+        exportEmptyBtn.addEventListener('click', () => exportReportData('empty'));
+        
+        // Tab navigation
+        validationTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                validationTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                filterResults(tab.dataset.tab);
+            });
+        });
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Handle file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            const isTesouraria = event.target.id === 'tesourariaFile';
+            const previewElement = isTesouraria ? tesourariaPreview : contasPreview;
+            
+            if (!file) {
+                previewElement.innerHTML = '<p>Nenhum arquivo carregado</p>';
+                if (isTesouraria) {
+                    tesourariaData = [];
+                } else {
+                    contasData = [];
+                }
+                return;
+            }
+            
+            // Check file size (limit to 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showError('O arquivo é muito grande. Tamanho máximo permitido: 5MB');
+                event.target.value = '';
+                previewElement.innerHTML = '<p>Nenhum arquivo carregado</p>';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    if (workbook.SheetNames.length === 0) {
+                        showError('O arquivo não contém nenhuma planilha');
+                        return;
+                    }
+                    
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                    
+                    // Store the data
+                    if (isTesouraria) {
+                        tesourariaData = processTesourariaData(jsonData);
+                    } else {
+                        contasData = processContasData(jsonData);
+                    }
+                    
+                    // Update preview
+                    updatePreview(previewElement, jsonData);
+                    
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    showError('Erro ao processar o arquivo. Verifique o formato.');
+                    event.target.value = '';
+                    previewElement.innerHTML = '<p>Nenhum arquivo carregado</p>';
+                }
+            };
+            
+            reader.onerror = function() {
+                showError('Erro ao ler o arquivo');
+                event.target.value = '';
+                previewElement.innerHTML = '<p>Nenhum arquivo carregado</p>';
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Process Tesouraria data and check for duplicate names
+        function processTesourariaData(data) {
+            if (data.length < 2) {
+                showError('O arquivo da Tesouraria não contém dados suficientes');
+                return [];
+            }
+            
+            const headers = data[0].map(h => h.toString().toLowerCase().trim());
+            const codigoIndex = headers.findIndex(h => h.includes('código') || h.includes('codigo'));
+            const descricaoIndex = headers.findIndex(h => h.includes('descrição') || h.includes('descricao'));
+            const cblIndex = headers.findIndex(h => h.includes('cbl'));
+            
+            if (codigoIndex === -1 || descricaoIndex === -1 || cblIndex === -1) {
+                showError('O arquivo da Tesouraria deve conter colunas: Código, Descrição e Código CBL');
+                return [];
+            }
+            
+            // Check for duplicate descriptions
+            const descriptionCounts = {};
+            const items = data.slice(1).map(row => ({
+                codigo: row[codigoIndex]?.toString().trim() || '',
+                descricao: row[descricaoIndex]?.toString().trim() || '',
+                cbl: row[cblIndex]?.toString().trim() || ''
+            })).filter(item => item.codigo); // Filter out empty rows
+            
+            // Count descriptions
+            items.forEach(item => {
+                const desc = item.descricao.toLowerCase();
+                descriptionCounts[desc] = (descriptionCounts[desc] || 0) + 1;
+            });
+            
+            // Identify duplicates
+            duplicateNames = new Set();
+            Object.entries(descriptionCounts).forEach(([desc, count]) => {
+                if (count > 1) {
+                    duplicateNames.add(desc);
+                }
+            });
+            
+            return items;
+        }
+        
+        // Process Contas data
+        function processContasData(data) {
+            if (data.length < 2) {
+                showError('O arquivo do Plano de Contas não contém dados suficientes');
+                return [];
+            }
+            
+            const headers = data[0].map(h => h.toString().toLowerCase().trim());
+            const codigoIndex = headers.findIndex(h => h.includes('código') || h.includes('codigo'));
+            const descricaoIndex = headers.findIndex(h => h.includes('descrição') || h.includes('descricao'));
+            
+            if (codigoIndex === -1 || descricaoIndex === -1) {
+                showError('O arquivo do Plano de Contas deve conter colunas: Código e Descrição');
+                return [];
+            }
+            
+            return data.slice(1).map(row => ({
+                codigo: row[codigoIndex]?.toString().trim() || '',
+                descricao: row[descricaoIndex]?.toString().trim() || ''
+            })).filter(item => item.codigo); // Filter out empty rows
+        }
+        
+        // Update file preview
+        function updatePreview(element, data) {
+            if (data.length === 0) {
+                element.innerHTML = '<p>Nenhum dado encontrado no arquivo</p>';
+                return;
+            }
+            
+            let html = '<table><thead><tr>';
+            
+            // Add headers
+            data[0].forEach(header => {
+                html += `<th>${header}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            // Add first 5 rows
+            const rowsToShow = Math.min(5, data.length - 1);
+            for (let i = 1; i <= rowsToShow; i++) {
+                html += '<tr>';
+                data[i].forEach(cell => {
+                    const cellValue = cell !== undefined && cell !== null ? cell.toString() : '';
+                    html += `<td>${cellValue}</td>`;
+                });
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            
+            if (data.length - 1 > rowsToShow) {
+                html += `<p class="text-muted">... e mais ${data.length - 1 - rowsToShow} linhas</p>`;
+            }
+            
+            element.innerHTML = html;
+        }
+        
+        // Compare the data with enhanced validation
+        function compareData() {
+            if (tesourariaData.length === 0 || contasData.length === 0) {
+                showError('Por favor, carregue ambos os arquivos antes de comparar');
+                return;
+            }
+            
+            showLoading(true);
+            
+            // Use setTimeout to allow UI to update before heavy processing
+            setTimeout(() => {
+                try {
+                    comparisonResults = [];
+                    const prefix = prefixField.value.trim();
+                    const descMatchType = descricaoMatch.value;
+                    const isCaseSensitive = caseSensitive.value === 'true';
+                    
+                    // Pré-processar os códigos do Plano de Contas para busca rápida
+                    const contasCodesMap = new Map();
+                    contasData.forEach(contaItem => {
+                        // Normalizar o código conforme configuração
+                        const normalizedCode = isCaseSensitive ? 
+                            contaItem.codigo.toString().trim() : 
+                            contaItem.codigo.toString().trim().toUpperCase();
+                        contasCodesMap.set(normalizedCode, contaItem);
+                    });
+                    
+                    tesourariaData.forEach(tesourariaItem => {
+                        const cblCode = tesourariaItem.cbl?.toString().trim() || '';
+                        const isDuplicate = duplicateNames.has(tesourariaItem.descricao.toLowerCase());
+                        
+                        // Verificar se o código CBL está vazio
+                        if (!cblCode) {
+                            comparisonResults.push({
+                                ...tesourariaItem,
+                                status: 'empty',
+                                contasCodigo: '',
+                                contasDescricao: '',
+                                isValid: false,
+                                reason: 'Código CBL vazio',
+                                isDuplicate: isDuplicate
+                            });
+                            return;
+                        }
+                        
+                        // Normalizar o código CBL conforme configuração
+                        const normalizedCbl = isCaseSensitive ? cblCode : cblCode.toUpperCase();
+                        
+                        // Criar variações do código para comparação
+                        const codeVariations = [
+                            prefix + normalizedCbl,  // Versão com prefixo
+                            normalizedCbl,          // Versão sem prefixo
+                            normalizedCbl.padStart(10, '0') // Versão com padding de zeros
+                        ];
+                        
+                        // Procurar correspondência em todas as variações
+                        let matchingConta = null;
+                        let matchedCode = '';
+                        
+                        for (const code of codeVariations) {
+                            if (contasCodesMap.has(code)) {
+                                matchingConta = contasCodesMap.get(code);
+                                matchedCode = code;
+                                break;
+                            }
+                        }
+                        
+                        if (matchingConta) {
+                            // Verificar correspondência da descrição se configurado
+                            let descricaoMatch = true;
+                            let descricaoReason = '';
+                            
+                            if (descMatchType !== 'none' && tesourariaItem.descricao && matchingConta.descricao) {
+                                const tesDesc = isCaseSensitive ? 
+                                    tesourariaItem.descricao.trim() : 
+                                    tesourariaItem.descricao.trim().toLowerCase();
+                                const contDesc = isCaseSensitive ? 
+                                    matchingConta.descricao.trim() : 
+                                    matchingConta.descricao.trim().toLowerCase();
+                                
+                                if (descMatchType === 'exact') {
+                                    descricaoMatch = tesDesc === contDesc;
+                                    if (!descricaoMatch) {
+                                        descricaoReason = 'Descrição não corresponde exatamente';
+                                    }
+                                } else { // partial
+                                    descricaoMatch = tesDesc.includes(contDesc) || contDesc.includes(tesDesc);
+                                    if (!descricaoMatch) {
+                                        descricaoReason = 'Descrição não corresponde parcialmente';
+                                    }
+                                }
+                            }
+                            
+                            if (descricaoMatch) {
+                                comparisonResults.push({
+                                    ...tesourariaItem,
+                                    status: 'valid',
+                                    contasCodigo: matchingConta.codigo,
+                                    contasDescricao: matchingConta.descricao,
+                                    isValid: true,
+                                    reason: isDuplicate ? 'Descrição duplicada' : '',
+                                    isDuplicate: isDuplicate
+                                });
+                            } else {
+                                comparisonResults.push({
+                                    ...tesourariaItem,
+                                    status: 'partial',
+                                    contasCodigo: matchingConta.codigo,
+                                    contasDescricao: matchingConta.descricao,
+                                    isValid: false,
+                                    reason: isDuplicate ? 'Descrição duplicada' : descricaoReason,
+                                    isDuplicate: isDuplicate
+                                });
+                            }
+                        } else {
+                            comparisonResults.push({
+                                ...tesourariaItem,
+                                status: 'invalid',
+                                contasCodigo: '',
+                                contasDescricao: '',
+                                isValid: false,
+                                reason: isDuplicate ? 'Descrição duplicada' : `Código não encontrado no Plano de Contas (tentado: ${codeVariations.join(', ')})`,
+                                isDuplicate: isDuplicate
+                            });
+                        }
+                    });
+                    
+                    displayResults();
+                    exportBtn.disabled = false;
+                    generateReportBtn.disabled = false;
+                    exportPdfBtn.disabled = false;
+                    
+                } catch (error) {
+                    console.error('Error during comparison:', error);
+                    showError('Ocorreu um erro durante a comparação dos dados');
+                } finally {
+                    showLoading(false);
+                }
+            }, 100);
+        }
+        
+        // Show/hide loading indicator
+        function showLoading(show) {
+            loadingIndicator.style.display = show ? 'block' : 'none';
+            compareBtn.disabled = show;
+        }
+        
+        // Filter results by status
+        function filterResults(status) {
+            const rows = document.querySelectorAll('#resultsBody tr');
+            rows.forEach(row => {
+                const rowStatus = row.dataset.status;
+                if (status === 'all' || rowStatus === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Display results in the table
+        function displayResults() {
+            resultsBody.innerHTML = '';
+            
+            comparisonResults.forEach(item => {
+                const row = document.createElement('tr');
+                row.dataset.status = item.status;
+                
+                // Add duplicate indicator
+                if (item.isDuplicate) {
+                    row.classList.add('duplicate-name');
+                }
+                
+                // Add status indicator
+                const statusCell = document.createElement('td');
+                const statusIndicator = document.createElement('span');
+                statusIndicator.className = `status-indicator status-${item.status}`;
+                statusCell.appendChild(statusIndicator);
+                
+                let statusText = '';
+                if (item.status === 'valid') statusText = 'Válido';
+                else if (item.status === 'partial') statusText = 'Parcial';
+                else if (item.status === 'invalid') statusText = 'Inválido';
+                else statusText = 'CBL Vazio';
+                
+                if (item.isDuplicate) {
+                    statusText += ' <span class="duplicate-warning" title="Descrição duplicada">⚠️</span>';
+                }
+                
+                statusCell.innerHTML = statusIndicator.outerHTML + ' ' + statusText;
+                row.appendChild(statusCell);
+                
+                // Add Tesouraria data
+                row.appendChild(createCell(item.codigo));
+                row.appendChild(createCell(item.descricao));
+                row.appendChild(createCell(item.cbl));
+                
+                // Add Contas data
+                row.appendChild(createCell(item.contasCodigo));
+                row.appendChild(createCell(item.contasDescricao));
+                
+                // Add validation controls
+                const validationCell = document.createElement('td');
+                const validationDiv = document.createElement('div');
+                validationDiv.className = 'validation-controls';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'validation-checkbox';
+                checkbox.checked = item.isValid;
+                checkbox.addEventListener('change', (e) => {
+                    item.isValid = e.target.checked;
+                    updateRowClasses(row, item);
+                    updateStats();
+                });
+                
+                validationDiv.appendChild(checkbox);
+                validationDiv.appendChild(document.createTextNode('Validar'));
+                validationCell.appendChild(validationDiv);
+                row.appendChild(validationCell);
+                
+                // Add class based on validation status
+                updateRowClasses(row, item);
+                
+                resultsBody.appendChild(row);
+            });
+            
+            // Update stats
+            updateStats();
+            
+            // Show results section
+            resultsSection.style.display = 'block';
+        }
+        
+        // Update row classes based on status and validation
+        function updateRowClasses(row, item) {
+            // Clear all status classes
+            row.classList.remove('validated', 'partially-validated', 'not-validated', 'empty-cbl');
+            
+            if (item.isValid) {
+                if (item.status === 'valid') {
+                    row.classList.add('validated');
+                } else {
+                    row.classList.add('partially-validated');
+                }
+            } else {
+                if (item.status === 'empty') {
+                    row.classList.add('empty-cbl');
+                } else {
+                    row.classList.add('not-validated');
+                }
+            }
+        }
+        
+        // Create a table cell
+        function createCell(text) {
+            const cell = document.createElement('td');
+            cell.textContent = text || '-';
+            return cell;
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const validCount = comparisonResults.filter(item => item.isValid && item.status === 'valid').length;
+            const partialCount = comparisonResults.filter(item => item.status === 'partial').length;
+            const invalidCount = comparisonResults.filter(item => !item.isValid && item.status === 'invalid').length;
+            const emptyCount = comparisonResults.filter(item => item.status === 'empty').length;
+            const duplicateCount = comparisonResults.filter(item => item.isDuplicate).length;
+            const totalCount = comparisonResults.length;
+            
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <h3>Total de Itens</h3>
+                    <div class="stat-value">${totalCount}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Validados</h3>
+                    <div class="stat-value" style="color: var(--success-color)">${validCount}</div>
+                    <div>${totalCount > 0 ? Math.round((validCount / totalCount) * 100) : 0}%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Parcialmente Validados</h3>
+                    <div class="stat-value" style="color: var(--warning-color)">${partialCount}</div>
+                    <div>${totalCount > 0 ? Math.round((partialCount / totalCount) * 100) : 0}%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Inválidos</h3>
+                    <div class="stat-value" style="color: var(--danger-color)">${invalidCount}</div>
+                    <div>${totalCount > 0 ? Math.round((invalidCount / totalCount) * 100) : 0}%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>CBL Vazio</h3>
+                    <div class="stat-value" style="color: var(--warning-color)">${emptyCount}</div>
+                    <div>${totalCount > 0 ? Math.round((emptyCount / totalCount) * 100) : 0}%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Descrições Duplicadas</h3>
+                    <div class="stat-value" style="color: var(--danger-color)">${duplicateCount}</div>
+                    <div>${totalCount > 0 ? Math.round((duplicateCount / totalCount) * 100) : 0}%</div>
+                </div>
+            `;
+        }
+        
+        // Export results to Excel
+        function exportResults() {
+            if (comparisonResults.length === 0) {
+                showError('Nenhum dado para exportar');
+                return;
+            }
+            
+            try {
+                const exportData = comparisonResults.map(item => ({
+                    'Código Tesouraria': item.codigo,
+                    'Descrição Tesouraria': item.descricao,
+                    'Código CBL': item.cbl,
+                    'Código Plano de Contas': item.contasCodigo,
+                    'Descrição Plano de Contas': item.contasDescricao,
+                    'Status': item.status === 'valid' ? 'Válido' : 
+                             item.status === 'partial' ? 'Parcial' :
+                             item.status === 'invalid' ? 'Inválido' : 'CBL Vazio',
+                    'Validado': item.isValid ? 'Sim' : 'Não',
+                    'Descrição Duplicada': item.isDuplicate ? 'Sim' : 'Não',
+                    'Razão': item.reason || ''
+                }));
+                
+                const worksheet = XLSX.utils.json_to_sheet(exportData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Resultados');
+                
+                const date = new Date().toISOString().slice(0, 10);
+                XLSX.writeFile(workbook, `Comparação_Planos_${date}.xlsx`);
+            } catch (error) {
+                console.error('Error exporting to Excel:', error);
+                showError('Erro ao exportar para Excel');
+            }
+        }
+        
+        // Generate report
+        function generateReport() {
+            if (comparisonResults.length === 0) {
+                showError('Nenhum dado para gerar relatório');
+                return;
+            }
+            
+            try {
+                // Clear previous reports
+                validReportBody.innerHTML = '';
+                partialReportBody.innerHTML = '';
+                emptyReportBody.innerHTML = '';
+                invalidReportBody.innerHTML = '';
+                
+                // Generate valid items report
+                const validItems = comparisonResults.filter(item => item.isValid && item.status === 'valid');
+                validItems.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.appendChild(createCell(item.codigo));
+                    row.appendChild(createCell(item.descricao));
+                    row.appendChild(createCell(item.cbl));
+                    row.appendChild(createCell(item.contasCodigo));
+                    row.appendChild(createCell(item.contasDescricao));
+                    if (item.isDuplicate) {
+                        row.classList.add('duplicate-name');
+                    }
+                    validReportBody.appendChild(row);
+                });
+                
+                // Generate partial items report
+                const partialItems = comparisonResults.filter(item => item.status === 'partial');
+                partialItems.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.appendChild(createCell(item.codigo));
+                    row.appendChild(createCell(item.descricao));
+                    row.appendChild(createCell(item.cbl));
+                    row.appendChild(createCell(item.contasCodigo));
+                    row.appendChild(createCell(item.contasDescricao));
+                    row.appendChild(createCell(item.reason));
+                    if (item.isDuplicate) {
+                        row.classList.add('duplicate-name');
+                    }
+                    partialReportBody.appendChild(row);
+                });
+                
+                // Generate empty CBL items report
+                const emptyItems = comparisonResults.filter(item => item.status === 'empty');
+                emptyItems.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.appendChild(createCell(item.codigo));
+                    row.appendChild(createCell(item.descricao));
+                    row.appendChild(createCell(item.cbl));
+                    row.appendChild(createCell(item.reason));
+                    if (item.isDuplicate) {
+                        row.classList.add('duplicate-name');
+                    }
+                    emptyReportBody.appendChild(row);
+                });
+                
+                // Generate invalid items report
+                const invalidItems = comparisonResults.filter(item => !item.isValid && item.status === 'invalid');
+                invalidItems.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.appendChild(createCell(item.codigo));
+                    row.appendChild(createCell(item.descricao));
+                    row.appendChild(createCell(item.cbl));
+                    row.appendChild(createCell(item.reason));
+                    if (item.isDuplicate) {
+                        row.classList.add('duplicate-name');
+                    }
+                    invalidReportBody.appendChild(row);
+                });
+                
+                // Show report section
+                reportSection.style.display = 'block';
+                
+                // Scroll to report section
+                reportSection.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error generating report:', error);
+                showError('Erro ao gerar relatório');
+            }
+        }
+        
+        // Export report data
+        function exportReportData(type) {
+            let exportData, fileName;
+            
+            if (type === 'valid') {
+                exportData = comparisonResults
+                    .filter(item => item.isValid && item.status === 'valid')
+                    .map(item => ({
+                        'Código Tesouraria': item.codigo,
+                        'Descrição Tesouraria': item.descricao,
+                        'Código CBL': item.cbl,
+                        'Código Plano de Contas': item.contasCodigo,
+                        'Descrição Plano de Contas': item.contasDescricao,
+                        'Descrição Duplicada': item.isDuplicate ? 'Sim' : 'Não'
+                    }));
+                fileName = 'Itens_Validados';
+            } else if (type === 'partial') {
+                exportData = comparisonResults
+                    .filter(item => item.status === 'partial')
+                    .map(item => ({
+                        'Código Tesouraria': item.codigo,
+                        'Descrição Tesouraria': item.descricao,
+                        'Código CBL': item.cbl,
+                        'Código Plano de Contas': item.contasCodigo,
+                        'Descrição Plano de Contas': item.contasDescricao,
+                        'Razão': item.reason,
+                        'Descrição Duplicada': item.isDuplicate ? 'Sim' : 'Não'
+                    }));
+                fileName = 'Itens_Parcialmente_Validados';
+            } else if (type === 'empty') {
+                exportData = comparisonResults
+                    .filter(item => item.status === 'empty')
+                    .map(item => ({
+                        'Código Tesouraria': item.codigo,
+                        'Descrição Tesouraria': item.descricao,
+                        'Código CBL': item.cbl,
+                        'Razão': item.reason,
+                        'Descrição Duplicada': item.isDuplicate ? 'Sim' : 'Não'
+                    }));
+                fileName = 'Itens_CBL_Vazio';
+            } else {
+                exportData = comparisonResults
+                    .filter(item => !item.isValid && item.status === 'invalid')
+                    .map(item => ({
+                        'Código Tesouraria': item.codigo,
+                        'Descrição Tesouraria': item.descricao,
+                        'Código CBL': item.cbl,
+                        'Razão': item.reason,
+                        'Descrição Duplicada': item.isDuplicate ? 'Sim' : 'Não'
+                    }));
+                fileName = 'Itens_Invalidos';
+            }
+            
+            if (exportData.length === 0) {
+                let message = '';
+                switch(type) {
+                    case 'valid': message = 'Nenhum item válido para exportar'; break;
+                    case 'partial': message = 'Nenhum item parcialmente validado para exportar'; break;
+                    case 'empty': message = 'Nenhum item com CBL vazio para exportar'; break;
+                    default: message = 'Nenhum item inválido para exportar';
+                }
+                showError(message);
+                return;
+            }
+            
+            try {
+                const worksheet = XLSX.utils.json_to_sheet(exportData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Relatório');
+                
+                const date = new Date().toISOString().slice(0, 10);
+                XLSX.writeFile(workbook, `${fileName}_${date}.xlsx`);
+            } catch (error) {
+                console.error('Error exporting report data:', error);
+                showError('Erro ao exportar dados do relatório');
+            }
+        }
+        
+        // Export to PDF
+        function exportToPdf() {
+            if (comparisonResults.length === 0) {
+                showError('Nenhum dado para exportar para PDF');
+                return;
+            }
+            
+            try {
+                // Create new PDF
+                const pdf = new jsPDF('p', 'pt', 'a4');
+                
+                // Add title
+                pdf.setFontSize(16);
+                pdf.setTextColor(44, 62, 80); // primary color
+                pdf.text('Relatório de Comparação - Plano de Tesouraria vs Plano de Contas', 40, 40);
+                
+                // Add date
+                pdf.setFontSize(10);
+                pdf.setTextColor(100, 100, 100);
+                pdf.text(`Gerado em: ${new Date().toLocaleString()}`, 40, 60);
+                
+                // Add stats
+                pdf.setFontSize(14);
+                pdf.setTextColor(44, 62, 80);
+                pdf.text('Estatísticas', 40, 90);
+                
+                const validCount = comparisonResults.filter(item => item.isValid && item.status === 'valid').length;
+                const partialCount = comparisonResults.filter(item => item.status === 'partial').length;
+                const invalidCount = comparisonResults.filter(item => !item.isValid && item.status === 'invalid').length;
+                const emptyCount = comparisonResults.filter(item => item.status === 'empty').length;
+                const duplicateCount = comparisonResults.filter(item => item.isDuplicate).length;
+                const totalCount = comparisonResults.length;
+                
+                pdf.setFontSize(12);
+                pdf.text(`Total de Itens: ${totalCount}`, 40, 120);
+                pdf.setTextColor(39, 174, 96); // success color
+                pdf.text(`Validados: ${validCount} (${totalCount > 0 ? Math.round((validCount / totalCount) * 100) : 0}%)`, 40, 140);
+                pdf.setTextColor(243, 156, 18); // warning color
+                pdf.text(`Parcialmente Validados: ${partialCount} (${totalCount > 0 ? Math.round((partialCount / totalCount) * 100) : 0}%)`, 40, 160);
+                pdf.setTextColor(231, 76, 60); // danger color
+                pdf.text(`Inválidos: ${invalidCount} (${totalCount > 0 ? Math.round((invalidCount / totalCount) * 100) : 0}%)`, 40, 180);
+                pdf.setTextColor(243, 156, 18); // warning color
+                pdf.text(`CBL Vazio: ${emptyCount} (${totalCount > 0 ? Math.round((emptyCount / totalCount) * 100) : 0}%)`, 40, 200);
+                pdf.setTextColor(231, 76, 60); // danger color
+                pdf.text(`Descrições Duplicadas: ${duplicateCount} (${totalCount > 0 ? Math.round((duplicateCount / totalCount) * 100) : 0}%)`, 40, 220);
+                
+                // Prepare data for table
+                const tableData = comparisonResults.map(item => [
+                    item.status === 'valid' ? 'Válido' : 
+                    item.status === 'partial' ? 'Parcial' :
+                    item.status === 'invalid' ? 'Inválido' : 'CBL Vazio',
+                    item.codigo || '-',
+                    item.descricao || (item.isDuplicate ? '(Duplicado)' : '-'),
+                    item.cbl || '-',
+                    item.contasCodigo || '-',
+                    item.contasDescricao || '-',
+                    item.isValid ? 'Sim' : 'Não',
+                    item.isDuplicate ? 'Sim' : 'Não',
+                    item.reason || ''
+                ]);
+                
+                // Add table
+                pdf.setFontSize(14);
+                pdf.setTextColor(44, 62, 80);
+                pdf.text('Resultados Detalhados', 40, 250);
+                
+                pdf.autoTable({
+                    startY: 260,
+                    head: [['Status', 'Código Tesouraria', 'Descrição Tesouraria', 'Código CBL', 'Código Plano Contas', 'Descrição Plano Contas', 'Validado', 'Duplicado', 'Razão']],
+                    body: tableData,
+                    margin: { left: 40 },
+                    styles: {
+                        fontSize: 7,
+                        cellPadding: 2,
+                        overflow: 'linebreak'
+                    },
+                    headStyles: {
+                        fillColor: [44, 62, 80], // primary color
+                        textColor: 255,
+                        fontSize: 8
+                    },
+                    alternateRowStyles: {
+                        fillColor: [242, 242, 242]
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 'auto' },
+                        1: { cellWidth: 'auto' },
+                        2: { cellWidth: 'auto' },
+                        3: { cellWidth: 'auto' },
+                        4: { cellWidth: 'auto' },
+                        5: { cellWidth: 'auto' },
+                        6: { cellWidth: 'auto' },
+                        7: { cellWidth: 'auto' },
+                        8: { cellWidth: 'auto' }
+                    },
+                    didDrawPage: function (data) {
+                        // Footer
+                        const pageCount = pdf.internal.getNumberOfPages();
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(150);
+                        pdf.text(`Página ${data.pageNumber} de ${pageCount}`, pdf.internal.pageSize.getWidth() - 40, pdf.internal.pageSize.getHeight() - 20);
+                    }
+                });
+                
+                const date = new Date().toISOString().slice(0, 10);
+                pdf.save(`Comparacao_Planos_${date}.pdf`);
+            } catch (error) {
+                console.error('Error exporting to PDF:', error);
+                showError('Erro ao exportar para PDF');
+            }
+        }
+        
+        // Export report to PDF
+        function exportReportToPdf() {
+            if (comparisonResults.length === 0) {
+                showError('Nenhum dado para gerar relatório PDF');
+                return;
+            }
+            
+            try {
+                // Create new PDF
+                const pdf = new jsPDF('p', 'pt', 'a4');
+                
+                // Add title
+                pdf.setFontSize(16);
+                pdf.setTextColor(44, 62, 80); // primary color
+                pdf.text('Relatório de Validação - Plano de Tesouraria vs Plano de Contas', 40, 40);
+                
+                // Add date
+                pdf.setFontSize(10);
+                pdf.setTextColor(100, 100, 100);
+                pdf.text(`Gerado em: ${new Date().toLocaleString()}`, 40, 60);
+                
+                // Add stats
+                pdf.setFontSize(14);
+                pdf.setTextColor(44, 62, 80);
+                pdf.text('Estatísticas', 40, 90);
+                
+                const validCount = comparisonResults.filter(item => item.isValid && item.status === 'valid').length;
+                const partialCount = comparisonResults.filter(item => item.status === 'partial').length;
+                const invalidCount = comparisonResults.filter(item => !item.isValid && item.status === 'invalid').length;
+                const emptyCount = comparisonResults.filter(item => item.status === 'empty').length;
+                const duplicateCount = comparisonResults.filter(item => item.isDuplicate).length;
+                const totalCount = comparisonResults.length;
+                
+                pdf.setFontSize(12);
+                pdf.text(`Total de Itens: ${totalCount}`, 40, 120);
+                pdf.setTextColor(39, 174, 96); // success color
+                pdf.text(`Validados: ${validCount} (${totalCount > 0 ? Math.round((validCount / totalCount) * 100) : 0}%)`, 40, 140);
+                pdf.setTextColor(243, 156, 18); // warning color
+                pdf.text(`Parcialmente Validados: ${partialCount} (${totalCount > 0 ? Math.round((partialCount / totalCount) * 100) : 0}%)`, 40, 160);
+                pdf.setTextColor(231, 76, 60); // danger color
+                pdf.text(`Inválidos: ${invalidCount} (${totalCount > 0 ? Math.round((invalidCount / totalCount) * 100) : 0}%)`, 40, 180);
+                pdf.setTextColor(243, 156, 18); // warning color
+                pdf.text(`CBL Vazio: ${emptyCount} (${totalCount > 0 ? Math.round((emptyCount / totalCount) * 100) : 0}%)`, 40, 200);
+                pdf.setTextColor(231, 76, 60); // danger color
+                pdf.text(`Descrições Duplicadas: ${duplicateCount} (${totalCount > 0 ? Math.round((duplicateCount / totalCount) * 100) : 0}%)`, 40, 220);
+                
+                // Add valid items table if any
+                const validItems = comparisonResults.filter(item => item.isValid && item.status === 'valid');
+                if (validItems.length > 0) {
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(44, 62, 80);
+                    pdf.text(`Itens Validados (${validItems.length})`, 40, 250);
+                    
+                    const validTableData = validItems.map(item => [
+                        item.codigo || '-',
+                        item.descricao || (item.isDuplicate ? '(Duplicado)' : '-'),
+                        item.cbl || '-',
+                        item.contasCodigo || '-',
+                        item.contasDescricao || '-',
+                        item.isDuplicate ? 'Sim' : 'Não'
+                    ]);
+                    
+                    pdf.autoTable({
+                        startY: 260,
+                        head: [['Código Tesouraria', 'Descrição Tesouraria', 'Código CBL', 'Código Plano Contas', 'Descrição Plano Contas', 'Duplicado']],
+                        body: validTableData,
+                        margin: { left: 40 },
+                        styles: {
+                            fontSize: 8,
+                            cellPadding: 3,
+                            overflow: 'linebreak'
+                        },
+                        headStyles: {
+                            fillColor: [39, 174, 96], // success color
+                            textColor: 255,
+                            fontSize: 9
+                        },
+                        alternateRowStyles: {
+                            fillColor: [242, 242, 242]
+                        },
+                        didDrawPage: function (data) {
+                            // Footer
+                            const pageCount = pdf.internal.getNumberOfPages();
+                            pdf.setFontSize(10);
+                            pdf.setTextColor(150);
+                            pdf.text(`Página ${data.pageNumber} de ${pageCount}`, pdf.internal.pageSize.getWidth() - 40, pdf.internal.pageSize.getHeight() - 20);
+                        }
+                    });
+                }
+                
+                // Add partial items table if any
+                const partialItems = comparisonResults.filter(item => item.status === 'partial');
+                if (partialItems.length > 0) {
+                    const startY = validItems.length > 0 ? pdf.lastAutoTable.finalY + 20 : 250;
+                    
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(44, 62, 80);
+                    pdf.text(`Itens Parcialmente Validados (${partialItems.length})`, 40, startY);
+                    
+                    const partialTableData = partialItems.map(item => [
+                        item.codigo || '-',
+                        item.descricao || (item.isDuplicate ? '(Duplicado)' : '-'),
+                        item.cbl || '-',
+                        item.contasCodigo || '-',
+                        item.contasDescricao || '-',
+                        item.reason || '-',
+                        item.isDuplicate ? 'Sim' : 'Não'
+                    ]);
+                    
+                    pdf.autoTable({
+                        startY: startY + 10,
+                        head: [['Código Tesouraria', 'Descrição Tesouraria', 'Código CBL', 'Código Plano Contas', 'Descrição Plano Contas', 'Razão', 'Duplicado']],
+                        body: partialTableData,
+                        margin: { left: 40 },
+                        styles: {
+                            fontSize: 8,
+                            cellPadding: 3,
+                            overflow: 'linebreak'
+                        },
+                        headStyles: {
+                            fillColor: [243, 156, 18], // warning color
+                            textColor: 255,
+                            fontSize: 9
+                        },
+                        alternateRowStyles: {
+                            fillColor: [242, 242, 242]
+                        },
+                        didDrawPage: function (data) {
+                            // Footer
+                            const pageCount = pdf.internal.getNumberOfPages();
+                            pdf.setFontSize(10);
+                            pdf.setTextColor(150);
+                            pdf.text(`Página ${data.pageNumber} de ${pageCount}`, pdf.internal.pageSize.getWidth() - 40, pdf.internal.pageSize.getHeight() - 20);
+                        }
+                    });
+                }
+                
+                // Add empty CBL items table if any
+                const emptyItems = comparisonResults.filter(item => item.status === 'empty');
+                if (emptyItems.length > 0) {
+                    const startY = partialItems.length > 0 ? pdf.lastAutoTable.finalY + 20 : 
+                                 validItems.length > 0 ? pdf.lastAutoTable.finalY + 20 : 250;
+                    
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(44, 62, 80);
+                    pdf.text(`Itens com CBL Vazio (${emptyItems.length})`, 40, startY);
+                    
+                    const emptyTableData = emptyItems.map(item => [
+                        item.codigo || '-',
+                        item.descricao || (item.isDuplicate ? '(Duplicado)' : '-'),
+                        item.cbl || '-',
+                        item.reason || '-',
+                        item.isDuplicate ? 'Sim' : 'Não'
+                    ]);
+                    
+                    pdf.autoTable({
+                        startY: startY + 10,
+                        head: [['Código Tesouraria', 'Descrição Tesouraria', 'Código CBL', 'Razão', 'Duplicado']],
+                        body: emptyTableData,
+                        margin: { left: 40 },
+                        styles: {
+                            fontSize: 8,
+                            cellPadding: 3,
+                            overflow: 'linebreak'
+                        },
+                        headStyles: {
+                            fillColor: [243, 156, 18], // warning color
+                            textColor: 255,
+                            fontSize: 9
+                        },
+                        alternateRowStyles: {
+                            fillColor: [242, 242, 242]
+                        },
+                        didDrawPage: function (data) {
+                            // Footer
+                            const pageCount = pdf.internal.getNumberOfPages();
+                            pdf.setFontSize(10);
+                            pdf.setTextColor(150);
+                            pdf.text(`Página ${data.pageNumber} de ${pageCount}`, pdf.internal.pageSize.getWidth() - 40, pdf.internal.pageSize.getHeight() - 20);
+                        }
+                    });
+                }
+                
+                // Add invalid items table if any
+                const invalidItems = comparisonResults.filter(item => !item.isValid && item.status === 'invalid');
+                if (invalidItems.length > 0) {
+                    const startY = emptyItems.length > 0 ? pdf.lastAutoTable.finalY + 20 : 
+                                 partialItems.length > 0 ? pdf.lastAutoTable.finalY + 20 : 
+                                 validItems.length > 0 ? pdf.lastAutoTable.finalY + 20 : 250;
+                    
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(44, 62, 80);
+                    pdf.text(`Itens Não Validados (${invalidItems.length})`, 40, startY);
+                    
+                    const invalidTableData = invalidItems.map(item => [
+                        item.codigo || '-',
+                        item.descricao || (item.isDuplicate ? '(Duplicado)' : '-'),
+                        item.cbl || '-',
+                        item.reason || '-',
+                        item.isDuplicate ? 'Sim' : 'Não'
+                    ]);
+                    
+                    pdf.autoTable({
+                        startY: startY + 10,
+                        head: [['Código Tesouraria', 'Descrição Tesouraria', 'Código CBL', 'Razão', 'Duplicado']],
+                        body: invalidTableData,
+                        margin: { left: 40 },
+                        styles: {
+                            fontSize: 8,
+                            cellPadding: 3,
+                            overflow: 'linebreak'
+                        },
+                        headStyles: {
+                            fillColor: [231, 76, 60], // danger color
+                            textColor: 255,
+                            fontSize: 9
+                        },
+                        alternateRowStyles: {
+                            fillColor: [242, 242, 242]
+                        },
+                        didDrawPage: function (data) {
+                            // Footer
+                            const pageCount = pdf.internal.getNumberOfPages();
+                            pdf.setFontSize(10);
+                            pdf.setTextColor(150);
+                            pdf.text(`Página ${data.pageNumber} de ${pageCount}`, pdf.internal.pageSize.getWidth() - 40, pdf.internal.pageSize.getHeight() - 20);
+                        }
+                    });
+                }
+                
+                const date = new Date().toISOString().slice(0, 10);
+                pdf.save(`Relatorio_Validacao_${date}.pdf`);
+            } catch (error) {
+                console.error('Error exporting report to PDF:', error);
+                showError('Erro ao gerar relatório PDF');
+            }
+        }
+        
+        // Clear all data
+        function clearAll() {
+            tesourariaData = [];
+            contasData = [];
+            comparisonResults = [];
+            duplicateNames = new Set();
+            
+            tesourariaFileInput.value = '';
+            contasFileInput.value = '';
+            tesourariaPreview.innerHTML = '<p>Nenhum arquivo carregado</p>';
+            contasPreview.innerHTML = '<p>Nenhum arquivo carregado</p>';
+            resultsBody.innerHTML = '';
+            validReportBody.innerHTML = '';
+            partialReportBody.innerHTML = '';
+            emptyReportBody.innerHTML = '';
+            invalidReportBody.innerHTML = '';
+            statsContainer.innerHTML = '';
+            
+            resultsSection.style.display = 'none';
+            reportSection.style.display = 'none';
+            
+            exportBtn.disabled = true;
+            generateReportBtn.disabled = true;
+            exportPdfBtn.disabled = true;
+            
+            // Reset tabs
+            validationTabs.forEach(tab => tab.classList.remove('active'));
+            validationTabs[0].classList.add('active');
+        }
+    </script>
+</body>
+</html>
